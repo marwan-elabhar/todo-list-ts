@@ -1,27 +1,36 @@
-<template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
-</template>
+<script setup lang="ts">
+import { ref } from "vue";
+import type { Ref } from "vue";
+import type { TodoItem } from "types";
+import TodoList from "./components/TodoList.vue";
+import { v4 as uuidv4 } from "uuid";
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+const text = ref("");
+const todoList: Ref<TodoItem[]> = ref([]);
 
-export default defineComponent({
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-});
+function addItem(): void {
+  todoList.value.push({
+    id: uuidv4(),
+    text: text.value,
+    isCompleted: false,
+  });
+  text.value = "";
+}
+
+function deleteItem(id: string): void {
+  todoList.value = todoList.value.filter((item) => item.id !== id);
+}
 </script>
 
+<template>
+  <div class="flex justify-center items-center">
+    <input type="text" v-model="text" />
+    <button @click="addItem">Add Item</button>
+    <TodoList :todo-list="todoList" @delete:item="deleteItem" />
+  </div>
+</template>
+
+
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 </style>
